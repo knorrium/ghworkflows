@@ -1,0 +1,48 @@
+name: Docker build on tag
+env:
+  DOCKER_CLI_EXPERIMENTAL: enabled
+  TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
+  DOCKER_BUILDKIT: 0
+  COMPOSE_DOCKER_CLI_BUILD: 0
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-*
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        service:
+          - frontend
+          - backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    name: Build and push to DockerHub
+    steps:
+      # Skip some steps
+
+      - name: Set env variables
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Show set environment variables
+        run: |
+          printf "      TAG: %s\n"  "$TAG"
+
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: Push latest only if tagging from main
+        if: github.ref == 'refs/heads/main'
+        run: |
+            echo "just latest: ${{ github.ref }}" 
+
+      - name: Push only the tag if tagging from a branch
+        if: github.ref != 'refs/heads/main'
+        run: |
+            echo "just latest + tag: ${{ github.ref }}"
