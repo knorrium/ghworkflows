@@ -4,6 +4,7 @@ env:
   TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
   DOCKER_BUILDKIT: 0
   COMPOSE_DOCKER_CLI_BUILD: 0
+  PUSH_LATEST: ${{ github.ref == 'refs/heads/master' || github.event_name == 'release' }}
 
 on:
   push:
@@ -37,22 +38,12 @@ jobs:
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
-      - name: Print github refs
-        run: |
-            echo "base_ref: ${{ github.base_ref }}"
-            echo "head_ref: ${{ github.head_ref }}"
-            echo "action_ref: ${{ github.action_ref }}"
-            echo "ref: ${{ github.ref }}"
-            echo "ref_type: ${{ github.ref_type }}"
-            echo "ref_name: ${{ github.ref_name }}"
-            echo "event: ${{ github.event }}"
-
       - name: Push latest only if tagging from main
-        if: github.ref == 'refs/heads/main'
+        if: env.PUSH_LATEST == true
         run: |
             echo "just latest: ${{ github.ref }}" 
 
       - name: Push only the tag if tagging from a branch
-        if: github.ref != 'refs/heads/main'
+        if: env.PUSH_LATEST == false
         run: |
             echo "just latest + tag: ${{ github.ref }}"
