@@ -4,7 +4,7 @@ env:
   TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
   DOCKER_BUILDKIT: 0
   COMPOSE_DOCKER_CLI_BUILD: 0
-  PUSH_LATEST: ${{ github.ref == 'refs/heads/master' || github.event_name == 'release' }}
+  PUSH_LATEST: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
 
 on:
   push:
