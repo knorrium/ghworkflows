@@ -37,10 +37,18 @@ jobs:
 
       - name: Get commit SHA of tag
         id: commit_sha
-        run: echo "::set-output name=commit_sha::${{ github.event.release.target_commitish }}"
+        run: echo "::set-output name=commit_sha::${{ github.event.release.tag_name }}"
       
       - name: Print commit SHA
         run: echo "Commit SHA of the tag is ${{ steps.commit_sha.outputs.commit_sha }}"
+
+      - name: Dump env
+        run: env | sort
+      
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: Push latest + tag only if releasing
         run: |
