@@ -39,11 +39,11 @@ jobs:
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
       - name: Push latest only if tagging from main
-        if: env.PUSH_LATEST == true
+        if: env.PUSH_LATEST == 'true'
         run: |
-            echo "just latest: ${{ github.ref }}" 
+            echo "push latest + tag : ${{ github.ref }}" 
 
       - name: Push only the tag if tagging from a branch
-        if: env.PUSH_LATEST == false
+        if: env.PUSH_LATEST == 'false'
         run: |
-            echo "just latest + tag: ${{ github.ref }}"
+            echo "push tag only: ${{ github.ref }}"
